@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App (Live Data)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      min-height: 100vh;
+    }
+    #weather {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    input {
+      padding: 10px;
+      width: 200px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Weather App (Live Data)</h1>
+
+<input type="text" id="cityInput" placeholder="Enter a city">
+<button onclick="getWeather()">Get Weather</button>
+
+<div id="weather"></div>
+
+<script>
+// Replace with your actual OpenWeatherMap API Key
+const apiKey = "533361f3663ec2c8f736162b61aeafc0";
+
+// Function to fetch live weather data
+function getWeather() {
+  const city = document.getElementById("cityInput").value.trim();
+  const weatherDiv = document.getElementById("weather");
+
+  if (city === "") {
+    weatherDiv.innerHTML = "<p>Please enter a city name.</p>";
+    return;
+  }
+
+  // Construct the API URL with the user input city and the API key
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+      if (data.cod === 200) {
+        // Successfully fetched data, now display the weather info
+        const temp = data.main.temp;
+        const condition = data.weather[0].description;
+        const humidity = data.main.humidity;
+        const icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+
+        weatherDiv.innerHTML = `
+          <h2>Weather in ${data.name}</h2>
+          <img src="${icon}" alt="${condition}" />
+          <p>Temperature: ${temp}°C</p>
+          <p>Condition: ${condition}</p>
+          <p>Humidity: ${humidity}%</p>
+        `;
+      } else {
+        weatherDiv.innerHTML = `<p>City not found. Please try again.</p>`;
+      }
+    })
+    .catch(error => {
+      weatherDiv.innerHTML = "<p>Unable to fetch weather data. Please try again later.</p>";
+    });
+}
+</script>
+
+</body>
+</html>
